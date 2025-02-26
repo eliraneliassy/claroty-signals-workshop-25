@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, input, Input, model, Output} from '@angular/core';
 import {User} from '../user.interface';
 
 @Component({
@@ -10,11 +10,11 @@ import {User} from '../user.interface';
 })
 export class UsersComponent {
 
-  @Input() users: User[] | null = [];
-  @Output() selectedUser = new EventEmitter<User>();
+  users = input<User[] | null>();
+  selectedUser = model<User | undefined>(undefined);
 
   selectUser(user: User){
-    this.selectedUser.emit(user);
+    this.selectedUser.set(user);
   }
 
 

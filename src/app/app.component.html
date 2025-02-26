@@ -1,10 +1,11 @@
-<app-users [users]="users$ | async"
-(selectedUser)="onSelectedUser($event)"></app-users>
+<app-users [users]="users()"
+[(selectedUser)]="selectedUser"></app-users>
 
 <hr>
 
-<app-posts [posts]="posts$ | async" (selectedPost)="onSelectedPost($event)"></app-posts>
+<app-posts [posts]="posts()"
+           [(selectedPost)]="selectedPost"></app-posts>
 
 <hr>
 
-<app-post-comments [comments]="comments$ | async"></app-post-comments>
+<app-post-comments [comments]="comments()"></app-post-comments>
