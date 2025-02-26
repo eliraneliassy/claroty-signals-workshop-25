@@ -2,10 +2,10 @@ import {
   afterRender,
   afterRenderEffect,
   ChangeDetectionStrategy,
-  Component,
+  Component, computed,
   effect,
-  inject,
-  signal
+  inject, linkedSignal, resource,
+  signal, WritableSignal
 } from '@angular/core';
 import {User} from './user.interface';
 import {PostsService} from './posts.service';
@@ -16,7 +16,8 @@ import {PostsComponent} from './posts/posts.component';
 import {PostComment} from './post-comment.interface';
 import {PostCommentsComponent} from './post-comments/post-comments.component';
 import {httpResource} from '@angular/common/http';
-import {toSignal} from '@angular/core/rxjs-interop';
+import {rxResource, toSignal} from '@angular/core/rxjs-interop';
+import {map, of} from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -34,51 +35,30 @@ export class AppComponent {
 
   postsService = inject(PostsService);
 
-  users = toSignal(this.postsService.fetchUsers());
+  // users = rxResource({
+  //   loader: () => this.postsService.fetchUsers(),
+  // });
+
+  users = this.postsService.fetchUsers2();
+
   selectedUser = signal<User | undefined>(undefined);
-  selectedPost = signal<Post | undefined>(undefined);
+  selectedPost: WritableSignal<Post | undefined> = linkedSignal(({
+    source: () => this.selectedUser(),
+    computation: () => undefined
+  }))
 
-  posts = signal<Post[]>([]);
+  posts = rxResource({
+    request: () => this.selectedUser(),
+    loader: ({request: selectedUser}) =>
+      selectedUser ? this.postsService.fetchPosts(selectedUser.id) : of([])
+  })
 
-  comments = signal<PostComment[]>([]);
-
-
-
-  constructor() {
-    effect(() => {
-      const user = this.selectedUser();
-
-      if(user) {
-        this.postsService.fetchPosts(user.id).subscribe(
-          (posts: Post[]) => {
-            this.posts.set(posts);
-          }
-        )
-      }
-    });
-
-    effect(() => {
-      const selectedPost = this.selectedPost();
-
-      if(selectedPost) {
-        this.postsService.fetchComments(selectedPost.id).subscribe(
-          (comments: PostComment[]) => {
-            this.comments.set(comments);
-          }
-        )
-      }
-    });
-
-    effect(() => {
-      this.selectedUser();
-
-      this.comments.set([]);
-    });
-
-
-  }
-
-
-
+  comments = resource({
+    request: () => this.selectedPost(),
+    loader: ({request: selectedPost}) =>
+      selectedPost ?
+        fetch(`https://jsonplaceholder.typicode.com/comments?postId=${selectedPost.id}`)
+          .then(res => res.json()) : Promise.resolve([])
+  })
 
 }

@@ -1,11 +1,15 @@
-<app-users [users]="users()"
-[(selectedUser)]="selectedUser"></app-users>
+@if (users.isLoading()) {
+  loading...
+} @else {
+  <app-users [users]="users.value()"
+             [(selectedUser)]="selectedUser"></app-users>
+}
 
 <hr>
 
-<app-posts [posts]="posts()"
+<app-posts [posts]="posts.value()"
            [(selectedPost)]="selectedPost"></app-posts>
 
 <hr>
 
-<app-post-comments [comments]="comments()"></app-post-comments>
+<app-post-comments [comments]="comments.value()"></app-post-comments>

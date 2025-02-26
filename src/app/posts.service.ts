@@ -1,5 +1,5 @@
 import {inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, httpResource} from '@angular/common/http';
 import {User} from './user.interface';
 import {Observable} from 'rxjs';
 import {Post} from './posts.interface';
@@ -18,6 +18,10 @@ export class PostsService {
     return this.http.get<User[]>(`${this.BASE_URL}/users`)
   }
 
+  fetchUsers2() {
+    return httpResource<User[]>(`${this.BASE_URL}/users`)
+  }
+
   fetchPosts(userId: number): Observable<Post[]> {
     return this.http.get<Post[]>(`${this.BASE_URL}/posts?userId=${userId}`)
   }
@@ -25,4 +29,6 @@ export class PostsService {
   fetchComments(postsId: number): Observable<PostComment[]> {
     return this.http.get<PostComment[]>(`${this.BASE_URL}/comments?postId=${postsId}`)
   }
+
+
 }

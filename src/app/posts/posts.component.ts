@@ -9,7 +9,7 @@ import {Post} from '../posts.interface';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PostsComponent {
-  posts = input<Post[] | null>([]);
+  posts = input<Post[] | undefined>([]);
 
   selectedPost = model<Post | undefined>(undefined);
 

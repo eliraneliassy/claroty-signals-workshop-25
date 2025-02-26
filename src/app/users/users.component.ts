@@ -10,7 +10,7 @@ import {User} from '../user.interface';
 })
 export class UsersComponent {
 
-  users = input<User[] | null>();
+  users = input<User[] |undefined | null>();
   selectedUser = model<User | undefined>(undefined);
 
   selectUser(user: User){
